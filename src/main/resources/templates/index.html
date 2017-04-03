@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Hotel Booking App</title>
+    <link th:if="${mode == 'development'}" rel="stylesheet" href="../static/bootstrap.css" th:href="@{/bootstrap.css}" />
+    <link th:if="${mode == 'production'}" rel="stylesheet" href="../static/bootstrap.min.css" th:href="@{/bootstrap.min.css}" />
+
+</head>
+<body ng-app="app" ng-controller="BookingsController as vm">
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Hotel Booking App</a>
+            </div>
+            <p class="navbar-text navbar-right" th:text="'Signed in as ' + ${username}" style="margin-right: 10px;">Signed in as Anonymus</p>
+        </div>
+    </nav>
+</header>
+
+<div>
+<div class="row">
+        <div class="col-lg-offset-2 col-lg-8">
+            <!-- Get all bookings or only affordable ones -->
+            <div class="btn-group" role="group">
+                <button ng-click="vm.getAll()" type="button" class="btn btn-default">All</button>
+                <button ng-click="vm.getAffordable()" type="button" class="btn btn-default">Less than 100$</button>
+                <button data-target="#saveHotel" data-toggle="modal" type="button" class="btn btn-default">Add new Hotel</button>
+            </div>
+
+            <!-- Modal save Hotel-->
+            <div class="modal fade" id="saveHotel" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4> Add new Hotel </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="inputHotelName">Hotel name:</label>
+                                    <input ng-model="vm.bookingDetails.hotelName" type="text" class="form-control" id="inputHotelName" placeholder="Hotel name" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputNumberNights">Nights:</label>
+                                    <input ng-model="vm.bookingDetails.numberOfNight" type="text" class="form-control" id="inputNumberNights" placeholder="Nights" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPricePerNight">Price/Nights:</label>
+                                    <input ng-model="vm.bookingDetails.pricePerNight" type="text" class="form-control" id="inputPricePerNight" placeholder="Price/Nights" />
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button ng-click="vm.addHotel()" data-dismiss="modal" type="button" class="btn btn-primary">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal rewrite Hotel-->
+            <div class="modal fade" id="rewriteHotel" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4> Rewrite Hotel </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form">
+                                <div class="form-group">
+                                    <label for="updateHotelName">Hotel name:</label>
+                                    <input ng-model="vm.bookingDetails.hotelName" value="vm.bookingDetails.hotelName" type="text" class="form-control" id="updateHotelName" placeholder="Hotel name"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="updateNumberNights">Nights:</label>
+                                    <input ng-model="vm.bookingDetails.numberOfNight" ng-value="booking.numberOfNight" type="text" class="form-control" id="updateNumberNights" placeholder="Nights" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="updatePricePerNight">Price/Nights:</label>
+                                    <input ng-model="vm.bookingDetails.pricePerNight" ng-value="booking.pricePerNight" type="text" class="form-control" id="updatePricePerNight" placeholder="Price/Nights" />
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"  ng-click="vm.updateHotel()" >Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display bookings in a table -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Hotel</th>
+                    <th>Nights</th>
+                    <th>Price/Night</th>
+                    <th style="width: 90px"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="booking in vm.bookings">
+                    <td>{{booking.hotelName}}</td>
+                    <td>{{booking.numberOfNight}}</td>
+                    <td>{{booking.pricePerNight}}</td>
+                    <td>
+                        <button class="btn btn-primary" data-target="#rewriteHotel" data-toggle="modal">Rewrite</button>
+                    </td>
+                    <td>
+                         <button class="btn btn-danger" ng-click="vm.deleteBooking(booking.id)">Delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+<footer class="footer" style="position: absolute; bottom:0;background-color: #f5f5f5; width: 100%">
+    <div class="container">
+        <p th:text="${#dates.format(datetime, 'dd MMM yyyy HH:mm:ss')}"  class="text-muted">Page was rendered today.</p>
+    </div>
+</footer>
+
+    <script type="text/javascript" scr="/static/angular.min.js" th:src="@{/angular.min.js}"></script>
+    <script type="text/javascript" scr="/static/app/app.module.js" th:src="@{/app/app.module.js}"></script>
+    <script type="text/javascript" scr="/static/app/bookings.controller.js" th:src="@{/app/bookings.controller.js}"></script>
+
+    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+</body>
+</html>
